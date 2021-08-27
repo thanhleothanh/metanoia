@@ -1,20 +1,22 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const getRandomBlurhash = require('../utils/randomBlurhash');
 
 const collectionSchema = mongoose.Schema(
   {
-    collectionName: { type: String, required: true, unique: true },
-    collectionSlug: { type: String },
-    collectionDescription: { type: String, required: true },
-    collectionSeason: { type: String, required: true },
-    collectionReleaseDate: { type: String, required: true },
-    collectionModels: [{ type: String, required: true }],
-    collectionDesigners: [{ type: String, required: true }],
-    collectionPhotographers: [{ type: String, required: true }],
-    collectionImages: [
+    name: { type: String, required: true, unique: true },
+    slug: { type: String },
+    description: { type: String, required: true },
+    season: { type: String, required: true },
+    releaseDate: { type: String, required: true },
+    models: [{ type: String, required: true }],
+    designers: [{ type: String, required: true }],
+    photographers: [{ type: String, required: true }],
+    images: [
       {
         _id: false,
-        image: { type: String, required: true },
+        src: { type: String, required: true },
+        blurhash: { type: String },
       },
     ],
   },
@@ -24,7 +26,14 @@ const collectionSchema = mongoose.Schema(
 );
 
 collectionSchema.pre('save', async function (next) {
-  this.collectionSlug = slugify(this.collectionName, { lower: true });
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+collectionSchema.pre('save', async function (next) {
+  this.images.forEach((image) => {
+    image.blurhash = getRandomBlurhash();
+  });
   next();
 });
 

@@ -11,7 +11,7 @@ exports.getProducts = catchAsync(async (req, res, next) => {
 
 exports.getProduct = catchAsync(async (req, res, next) => {
   const product = await Product.findOne({
-    productSlug: req.params.slug,
+    slug: req.params.slug,
   }).populate('productCollection');
   if (!product) throw new AppError('No product found!', 404);
   res.status(200).json(product);
@@ -19,16 +19,16 @@ exports.getProduct = catchAsync(async (req, res, next) => {
 
 exports.postProduct = catchAsync(async (req, res, next) => {
   const newProduct = await Product.create({
-    productName: req.body.productName,
-    productDescription: req.body.productDescription,
-    productSeason: req.body.productSeason,
-    productReleaseDate: req.body.productReleaseDate,
-    productCategory: req.body.productCategory,
-    productPrice: req.body.productPrice,
-    productDiscountPrice: req.body.productDiscountPrice,
-    productImages: req.body.productImages,
-    productCollection: req.body.productCollection,
-    productInStock: req.body.productInStock || [
+    name: req.body.name,
+    description: req.body.description,
+    season: req.body.season,
+    releaseDate: req.body.releaseDate,
+    category: req.body.category,
+    price: req.body.price,
+    discountPrice: req.body.discountPrice,
+    images: req.body.images,
+    fromCollection: req.body.fromCollection,
+    inStock: req.body.inStock || [
       { size: '1Meta', inStock: 0 },
       { size: '2Meta', inStock: 0 },
       { size: '3Meta', inStock: 0 },
@@ -39,7 +39,7 @@ exports.postProduct = catchAsync(async (req, res, next) => {
 
 exports.updateProduct = catchAsync(async (req, res, next) => {
   const product = await Product.findOneAndUpdate(
-    { productSlug: req.params.slug },
+    { slug: req.params.slug },
     req.body,
     {
       new: true,

@@ -17,7 +17,7 @@ exports.restrictTo = (...roles) => {
 };
 
 exports.facebookLogin = catchAsync(async (req, res, next) => {
-  const { facebookId, name, email, profileImage } = req.body;
+  const { facebookId, name, email = '', profileImage } = req.body;
   let user = await User.findOne({ facebookId });
   if (!user) {
     const newUser = await User.create({
@@ -27,10 +27,9 @@ exports.facebookLogin = catchAsync(async (req, res, next) => {
       profileImage,
     });
     user = newUser;
-    console.log('nguoi moi');
   }
   const token = signToken({ id: user._id });
-  res.status(202).json({
+  res.status(200).json({
     _id: user._id,
     facebookId: user.facebookId,
     username: user.username,

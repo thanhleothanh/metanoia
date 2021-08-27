@@ -1,16 +1,23 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const getRandomBlurhash = require('../utils/randomBlurhash');
 
 const productSchema = mongoose.Schema(
   {
-    productName: { type: String, required: true, unique: true },
-    productSlug: { type: String },
-    productCategory: { type: String, required: true },
-    productDescription: { type: String, required: true },
-    productSeason: { type: String, default: '' },
-    productReleaseDate: { type: String, default: '' },
-    productImages: [String],
-    productPrice: {
+    name: { type: String, required: true, unique: true },
+    slug: { type: String },
+    category: { type: String, required: true },
+    description: { type: String, required: true },
+    season: { type: String, default: '' },
+    releaseDate: { type: String, default: '' },
+    images: [
+      {
+        _id: false,
+        src: { type: String, required: true },
+        blurhash: { type: String },
+      },
+    ],
+    price: {
       type: Number,
       required: true,
       validate: {
@@ -20,7 +27,7 @@ const productSchema = mongoose.Schema(
         message: 'Invalid Price',
       },
     },
-    productDiscountPrice: {
+    discountPrice: {
       type: Number,
       validate: {
         validator: function (val) {
@@ -29,14 +36,14 @@ const productSchema = mongoose.Schema(
         message: 'Invalid Discount Price!',
       },
     },
-    productInStock: [
+    inStock: [
       {
         _id: false,
         size: { type: String, required: true },
         inStock: { type: Number, required: true },
       },
     ],
-    productCollection: {
+    fromCollection: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Collection',
     },
@@ -49,13 +56,20 @@ const productSchema = mongoose.Schema(
 );
 
 productSchema.pre('save', async function (next) {
-  this.productSlug = slugify(this.productName, { lower: true });
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+productSchema.pre('save', async function (next) {
+  this.images.forEach((image) => {
+    image.blurhash = getRandomBlurhash();
+  });
   next();
 });
 
 productSchema.virtual('totalInStock').get(function () {
   let total = 0;
-  this.productInStock.forEach((ele) => (total += ele.inStock));
+  this.inStock.forEach((ele) => (total += ele.inStock));
   return total;
 });
 

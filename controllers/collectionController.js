@@ -8,17 +8,24 @@ exports.getCollections = catchAsync(async (req, res, next) => {
   const collections = await api.query;
   res.status(200).json(collections);
 });
+exports.getCollection = catchAsync(async (req, res, next) => {
+  const collection = await Collection.findOne({
+    slug: req.params.slug,
+  });
+  if (!collection) throw new AppError('No collection found!', 404);
+  res.status(200).json(collection);
+});
 
 exports.postCollection = catchAsync(async (req, res, next) => {
   const newCollection = await Collection.create({
-    collectionName: req.body.collectionName,
-    collectionDescription: req.body.collectionDescription,
-    collectionSeason: req.body.collectionSeason,
-    collectionReleaseDate: req.body.collectionReleaseDate,
-    collectionModels: req.body.collectionModels || [],
-    collectionDesigners: req.body.collectionDesigners || [],
-    collectionPhotographers: req.body.collectionPhotographers || [],
-    collectionImages: req.body.collectionImages || [],
+    name: req.body.name,
+    description: req.body.description,
+    season: req.body.season,
+    releaseDate: req.body.releaseDate,
+    models: req.body.models || [],
+    designers: req.body.designers || [],
+    photographers: req.body.photographers || [],
+    images: req.body.images || [],
   });
   res.status(201).json(newCollection);
 });
