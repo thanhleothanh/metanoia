@@ -8,10 +8,9 @@ collectionRouter
   .get(collectionController.getCollections)
   .post(collectionController.postCollection);
 
-collectionRouter.route('/:slug').get(collectionController.getCollection);
-// .patch(
-//   authController.protect,
-//   authController.restrictTo('admin'),
-//   collectionController.updateCollection
-// );
+collectionRouter.route('/:slug').get(collectionController.getCollection).patch(
+  // authController.protect,
+  // authController.restrictTo('admin'),
+  collectionController.updateCollection
+);
 module.exports = collectionRouter;

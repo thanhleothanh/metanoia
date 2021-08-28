@@ -46,6 +46,7 @@ exports.updateProduct = catchAsync(async (req, res, next) => {
       runValidators: true,
     }
   );
+  await product.save();
   if (!product) throw new AppError('No product found!', 404);
 
   res.status(201).json(product);

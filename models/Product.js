@@ -29,9 +29,10 @@ const productSchema = mongoose.Schema(
     },
     discountPrice: {
       type: Number,
+      default: 0,
       validate: {
         validator: function (val) {
-          return val > 0;
+          return val >= 0;
         }, // only work when creating new DOC, not update!!
         message: 'Invalid Discount Price!',
       },

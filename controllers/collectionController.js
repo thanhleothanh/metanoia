@@ -29,3 +29,17 @@ exports.postCollection = catchAsync(async (req, res, next) => {
   });
   res.status(201).json(newCollection);
 });
+
+exports.updateCollection = catchAsync(async (req, res, next) => {
+  const collection = await Collection.findOneAndUpdate(
+    { slug: req.params.slug },
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  if (!collection) throw new AppError('No collection found!', 404);
+
+  res.status(201).json(collection);
+});
